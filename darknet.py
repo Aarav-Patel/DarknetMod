@@ -141,7 +141,7 @@ def meters_in_a_pixel (altitude, camera_angle_radians, length_pixels):
   FOV_length = 2*(altitude*(math.tan(camera_angle_radians/2)))
   meters_per_pixel = FOV_length/length_pixels
   return meters_per_pixel
-
+  
 
 def draw_boxes(detections, image, colors):
     import cv2
@@ -155,6 +155,8 @@ def draw_boxes(detections, image, colors):
     j = 1
     c = 0
     n = 0
+    min = 0
+    max = 255
     social_distancing_distance_meters = 1.8288
 
     limit = ((len(detections))*(len(detections)-1))/2
@@ -165,7 +167,7 @@ def draw_boxes(detections, image, colors):
         center_x_j = detections[j][2][0] 
         center_y_j = detections[j][2][1]
         if (math.sqrt(((center_x_i-center_x_j)*(center_x_i-center_x_j))+((center_y_i-center_y_j)*(center_y_i-center_y_j))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels) <= social_distancing_distance_meters):
-          image = cv2.line(image, (int(center_x_i), int(center_y_i)), (int(center_x_j), int(center_y_j)), (225,17,0), 1, cv2.LINE_AA)
+          image = cv2.line(image, (int(center_x_i), int(center_y_i)), (int(center_x_j), int(center_y_j)), (random.randint(min, max),random.randint(min, max),random.randint(min, max)), 1, cv2.LINE_AA)
           image = cv2.putText(image, "{} [{:f}]".format("SDV", n),(int((center_x_i+center_x_j)/2+5), int((center_y_i+center_y_j)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
           (255, 0, 239), 0, cv2.FILLED)
           n = n + 1
