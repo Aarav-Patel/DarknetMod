@@ -20,7 +20,7 @@ Windows Python 2.7 version: https://github.com/AlexeyAB/darknet/blob/fc496d52bf2
 
 @author: Philip Kahn (Original) and Aarav Patel (Modifcation: Social Distancing Detector)
 @date(Orginal): 20180503
-@data(Modifcation: Social Distancing Detector): 20201101
+@date(Modifcation: Social Distancing Detector): 20201101
 """
 from ctypes import *
 import math
