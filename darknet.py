@@ -169,7 +169,7 @@ def draw_boxes(detections, image, colors):
         center_y_j = detections[j][2][1]
         if (math.sqrt(((center_x_i-center_x_j)*(center_x_i-center_x_j))+((center_y_i-center_y_j)*(center_y_i-center_y_j))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels) <= social_distancing_distance_meters):
           image = cv2.line(image, (int(center_x_i), int(center_y_i)), (int(center_x_j), int(center_y_j)), (random.randint(min, max),random.randint(min, max),random.randint(min, max)), 1, cv2.LINE_AA)
-          image = cv2.putText(image, "{} [{:f}]".format("SDV", n),(int((center_x_i+center_x_j)/2+5), int((center_y_i+center_y_j)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
+          image = cv2.putText(image, "{} [{:f}]".format("SDV", math.sqrt(((center_x_i-center_x_j)*(center_x_i-center_x_j))+((center_y_i-center_y_j)*(center_y_i-center_y_j))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels)),(int((center_x_i+center_x_j)/2+5), int((center_y_i+center_y_j)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
           (255, 0, 239), 0, cv2.FILLED)
           n = n + 1
         j = j + 1
