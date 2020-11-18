@@ -151,31 +151,24 @@ def draw_boxes(detections, image, colors):
         cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 0), 0)
         
         
-        
-    i = 0
-    j = 1
-    c = 0
-    n = 0
-    min = 0
-    max = 255
+    positionO = 0
+    positionT = 1
+    minimum = 0
+    maximum = 255
     social_distancing_distance_meters = 1.8288
-
-    limit = ((len(detections))*(len(detections)-1))/2
-    while (c <= 0):
-      while (j < len(detections)):
-        center_x_i = detections[i][2][0] 
-        center_y_i = detections[i][2][1] 
-        center_x_j = detections[j][2][0] 
-        center_y_j = detections[j][2][1]
-        if (math.sqrt(((center_x_i-center_x_j)*(center_x_i-center_x_j))+((center_y_i-center_y_j)*(center_y_i-center_y_j))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels) <= social_distancing_distance_meters):
-          image = cv2.line(image, (int(center_x_i), int(center_y_i)), (int(center_x_j), int(center_y_j)), (random.randint(min, max),random.randint(min, max),random.randint(min, max)), 1, cv2.LINE_AA)
-          image = cv2.putText(image, "{} [{:f}]".format("SDV", math.sqrt(((center_x_i-center_x_j)*(center_x_i-center_x_j))+((center_y_i-center_y_j)*(center_y_i-center_y_j))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels)),(int((center_x_i+center_x_j)/2+5), int((center_y_i+center_y_j)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
-          (255, 0, 239), 0, cv2.FILLED)
-          n = n + 1
-        j = j + 1
-        c = c + 1
-    i = i + 1
-    j = i + 1
+    while (positionO<(len(detections)-1)):
+      while (positionT<len(detections)):
+          center_x_positionO = detections[positionO][2][0] 
+          center_y_positionO = detections[positionO][2][1] 
+          center_x_positionT = detections[positionT][2][0] 
+          center_y_positionT = detections[positionT][2][1]
+          if (math.sqrt(((center_x_positionO-center_x_positionT)*(center_x_positionO-center_x_positionT))+((center_y_positionO-center_y_positionT)*(center_y_positionO-center_y_positionT))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels) >= social_distancing_distance_meters):
+            image = cv2.line(image, (int(center_x_positionO), int(center_y_positionO)), (int(center_x_positionT), int(center_y_positionT)), (random.randint(minimum, maximum),random.randint(minimum, maximum),random.randint(minimum, maximum)), 1, cv2.LINE_AA)
+            image = cv2.putText(image, "{} [{:f}]".format("SDV", math.sqrt(((center_x_positionO-center_x_positionT)*(center_x_positionO-center_x_positionT))+((center_y_positionO-center_y_positionT)*(center_y_positionO-center_y_positionT))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels)),(int((center_x_positionO+center_x_positionT)/2+5), int((center_y_positionO+center_y_positionT)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
+            (255, 0, 239), 0, cv2.FILLED)
+          positionT = positionT + 1
+      positionO = positionO + 1
+      positionT = positionO + 1
     
 
 #255, 0, 239
@@ -361,3 +354,4 @@ network_predict_batch = lib.network_predict_batch
 network_predict_batch.argtypes = [c_void_p, IMAGE, c_int, c_int, c_int,
                                    c_float, c_float, POINTER(c_int), c_int, c_int]
 network_predict_batch.restype = POINTER(DETNUMPAIR)
+
