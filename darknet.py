@@ -1,23 +1,16 @@
 #!python3
 """
 Python 3 wrapper for identifying objects in images
-
 Requires DLL compilation
-
 Both the GPU and no-GPU version should be compiled; the no-GPU version should be renamed "yolo_cpp_dll_nogpu.dll".
-
 On a GPU system, you can force CPU evaluation by any of:
-
 - Set global variable DARKNET_FORCE_CPU to True
 - Set environment variable CUDA_VISIBLE_DEVICES to -1
 - Set environment variable "FORCE_CPU" to "true"
 - Set environment variable "DARKNET_PATH" to path darknet lib .so (for Linux)
-
 Directly viewing or returning bounding-boxed images requires scikit-image to be installed (`pip install scikit-image`)
-
 Original *nix 2.7: https://github.com/pjreddie/darknet/blob/0f110834f4e18b30d5f101bf8f1724c34b7b83db/python/darknet.py
 Windows Python 2.7 version: https://github.com/AlexeyAB/darknet/blob/fc496d52bf22a0bb257300d3c79be9cd80e722cb/build/darknet/x64/darknet.py
-
 @author: Philip Kahn (Original) and Aarav Patel (Modifcation: Social Distancing Detector)
 @date(Orginal): 20180503
 @date(Modifcation: Social Distancing Detector): 20201101
@@ -128,55 +121,46 @@ def print_detections(detections, coordinates=False):
         else:
             print("{}: {}%".format(label, confidence))
 
-altitude = 80
+
+ALTITUDE = 80
 #altitude of drone
-camera_angle_degrees = 79
+CAMERA_ANGLE_IN_DEGREES = 79
 #angle of the FOV (as the angle increases, the field of vision increases)
-camera_angle_radians = (camera_angle_degrees*(math.pi))/180
+CAMERA_ANGLE_IN_RADIANS = (CAMERA_ANGLE_IN_DEGREES*(math.pi))/180
 #converts the angle from degrees to radians and stores that value as a different variable
-length_pixels = 1440
+LENGTH_IN_PIXELS = 1440
 #the length of predictions.jpg in terms of pixels
 
-def meters_in_a_pixel (altitude, camera_angle_radians, length_pixels):
-  #determines the number of meters in one pixel
-  FOV_length = 2*(altitude*(math.tan(camera_angle_radians/2)))
-  meters_per_pixel = FOV_length/length_pixels
-  return meters_per_pixel
-  
-
+def meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS):
+    #determines the number of meters in one pixel
+    FOV_LENGTH = 2*(ALTITUDE*(math.tan(CAMERA_ANGLE_IN_RADIANS/2)))
+    METERS_PER_PIXEL = FOV_LENGTH/LENGTH_IN_PIXELS
+    return METERS_PER_PIXEL
 def draw_boxes(detections, image, colors):
     import cv2
     for label, confidence, bbox in detections:
         left, top, right, bottom = bbox2points(bbox)
         cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 0), 0)
-        
-        
-    positionO = 0
-    positionT = 1
-    minimum = 0
-    maximum = 255
-    social_distancing_distance_meters = 1.8288
-    while (positionO<(len(detections)-1)):
-      while (positionT<len(detections)):
-          center_x_positionO = detections[positionO][2][0] 
-          center_y_positionO = detections[positionO][2][1] 
-          center_x_positionT = detections[positionT][2][0] 
-          center_y_positionT = detections[positionT][2][1]
-          if (math.sqrt(((center_x_positionO-center_x_positionT)*(center_x_positionO-center_x_positionT))+((center_y_positionO-center_y_positionT)*(center_y_positionO-center_y_positionT))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels) >= social_distancing_distance_meters):
-            image = cv2.line(image, (int(center_x_positionO), int(center_y_positionO)), (int(center_x_positionT), int(center_y_positionT)), (random.randint(minimum, maximum),random.randint(minimum, maximum),random.randint(minimum, maximum)), 1, cv2.LINE_AA)
-            image = cv2.putText(image, "{} [{:f}]".format("SDV", math.sqrt(((center_x_positionO-center_x_positionT)*(center_x_positionO-center_x_positionT))+((center_y_positionO-center_y_positionT)*(center_y_positionO-center_y_positionT))) * meters_in_a_pixel(altitude, camera_angle_radians, length_pixels)),(int((center_x_positionO+center_x_positionT)/2+5), int((center_y_positionO+center_y_positionT)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
-            (255, 0, 239), 0, cv2.FILLED)
-          positionT = positionT + 1
-      positionO = positionO + 1
-      positionT = positionO + 1
-    
-
-#255, 0, 239
-    # cv2.putText(image, "{} [{:f}]".format(n),
-    # (left, top - 5), cv2.FONT_HERSHEY_PLAIN,.30,
-    # (255, 0, 239), 0, cv2.LINE_AA)
+    detection_a = 0
+    detection_b = 1
+    MINIMUM = 0
+    MAXIMUM = 255
+    SOCIAL_DISTANCING_THRESHOLD = 1.8288
+    while detection_a < len(detections)-1:
+        while detection_b < len(detections):
+            center_x_detection_a = detections[detection_a][2][0]
+            center_y_detection_a = detections[detection_a][2][1]
+            center_x_detection_b = detections[detection_b][2][0]
+            center_y_detection_b = detections[detection_b][2][1]
+            if (math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS) <= SOCIAL_DISTANCING_THRESHOLD):
+                
+                image = cv2.line(image, (int(center_x_detection_a), int(center_y_detection_a)), (int(center_x_detection_b), int(center_y_detection_b)), (random.randint(MINIMUM, MAXIMUM),random.randint(MINIMUM, MAXIMUM),random.randint(MINIMUM, MAXIMUM)), 1, cv2.LINE_AA)
+                image = cv2.putText(image, "{} [{:f}]".format("SDV", math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS)),(int((center_x_detection_a+center_x_detection_b)/2+5), int((center_y_detection_a+center_y_detection_b)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
+                (255, 0, 239), 0, cv2.FILLED)
+                detection_b = detection_b + 1
+        detection_a = detection_a + 1
+        detection_b = detection_a + 1
     return image
-
 def decode_detection(detections):
     decoded = []
     for label, confidence, bbox in detections:
@@ -354,4 +338,3 @@ network_predict_batch = lib.network_predict_batch
 network_predict_batch.argtypes = [c_void_p, IMAGE, c_int, c_int, c_int,
                                    c_float, c_float, POINTER(c_int), c_int, c_int]
 network_predict_batch.restype = POINTER(DETNUMPAIR)
-
