@@ -140,6 +140,7 @@ def meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS):
     
 def draw_boxes(detections, image, colors):
     import cv2
+    import math
     for label, confidence, bbox in detections:
         left, top, right, bottom = bbox2points(bbox)
         cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 0), 0)
@@ -153,21 +154,23 @@ def draw_boxes(detections, image, colors):
     #minimum value for RGB color (used for selecting line/text color)
     SOCIAL_DISTANCING_THRESHOLD = 1.8288
     #reccomended distance in meters for social distancing
-    while detection_a < len(detections)-1:
+    while (detection_a < (len(detections)-1)):
         while detection_b < len(detections):
             center_x_detection_a = detections[detection_a][2][0]
             center_y_detection_a = detections[detection_a][2][1]
             center_x_detection_b = detections[detection_b][2][0]
             center_y_detection_b = detections[detection_b][2][1]
-            if (math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS) <= SOCIAL_DISTANCING_THRESHOLD):
-                
+            if (math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS) <= SOCIAL_DISTANCING_THRESHOLD):   
                 image = cv2.line(image, (int(center_x_detection_a), int(center_y_detection_a)), (int(center_x_detection_b), int(center_y_detection_b)), (random.randint(MINIMUM, MAXIMUM),random.randint(MINIMUM, MAXIMUM),random.randint(MINIMUM, MAXIMUM)), 1, cv2.LINE_AA)
-                image = cv2.putText(image, "{} [{:f}]".format("SDV", math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS)),(int((center_x_detection_a+center_x_detection_b)/2+5), int((center_y_detection_a+center_y_detection_b)/2)), cv2.FONT_HERSHEY_PLAIN,.5,
+                image = cv2.putText(image, "{}".format("SDV"),(int((center_x_detection_a+center_x_detection_b)/2+5), int((center_y_detection_a+center_y_detection_b)/2)), cv2.FONT_HERSHEY_PLAIN,0.75,
                 (255, 0, 239), 0, cv2.FILLED)
                 detection_b = detection_b + 1
+            detection_b = detection_b + 1
         detection_a = detection_a + 1
         detection_b = detection_a + 1
     return image
+
+  
 def decode_detection(detections):
     decoded = []
     for label, confidence, bbox in detections:
