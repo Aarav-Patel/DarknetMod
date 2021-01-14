@@ -122,6 +122,7 @@ def print_detections(detections, coordinates=False):
             print("{}: {}%".format(label, confidence))
 
 
+
 ALTITUDE = 80
 #altitude of drone
 CAMERA_ANGLE_IN_DEGREES = 79
@@ -136,16 +137,22 @@ def meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS):
     FOV_LENGTH = 2*(ALTITUDE*(math.tan(CAMERA_ANGLE_IN_RADIANS/2)))
     METERS_PER_PIXEL = FOV_LENGTH/LENGTH_IN_PIXELS
     return METERS_PER_PIXEL
+    
 def draw_boxes(detections, image, colors):
     import cv2
     for label, confidence, bbox in detections:
         left, top, right, bottom = bbox2points(bbox)
         cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 0), 0)
     detection_a = 0
+    #index for first detection in comparison
     detection_b = 1
+    #index for second detection in comparison
     MINIMUM = 0
+    #minimum value for RGB color (used for selecting line/text color)
     MAXIMUM = 255
+    #minimum value for RGB color (used for selecting line/text color)
     SOCIAL_DISTANCING_THRESHOLD = 1.8288
+    #reccomended distance in meters for social distancing
     while detection_a < len(detections)-1:
         while detection_b < len(detections):
             center_x_detection_a = detections[detection_a][2][0]
