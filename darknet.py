@@ -134,7 +134,7 @@ LENGTH_IN_PIXELS = 1440
 
 def meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS):
     #determines the number of meters in one pixel
-    FOV_LENGTH = 2*(ALTITUDE*(math.tan(CAMERA_ANGLE_IN_RADIANS/2)))
+    FOV_LENGTH = math.sqrt(ALTITUDE*math.tan(CAMERA_ANGLE_IN_RADIANS/2))
     METERS_PER_PIXEL = FOV_LENGTH/LENGTH_IN_PIXELS
     return METERS_PER_PIXEL
     
