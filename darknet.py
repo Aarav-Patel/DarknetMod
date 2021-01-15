@@ -134,7 +134,7 @@ LENGTH_IN_PIXELS = 1440
 
 def meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS):
     #determines the number of meters in one pixel
-    FOV_LENGTH = math.sqrt(ALTITUDE*math.tan(CAMERA_ANGLE_IN_RADIANS/2))
+    FOV_LENGTH = 2*(ALTITUDE*(math.tan(CAMERA_ANGLE_IN_RADIANS/2)))
     METERS_PER_PIXEL = FOV_LENGTH/LENGTH_IN_PIXELS
     return METERS_PER_PIXEL
     
@@ -160,7 +160,7 @@ def draw_boxes(detections, image, colors):
             center_y_detection_a = detections[detection_a][2][1]
             center_x_detection_b = detections[detection_b][2][0]
             center_y_detection_b = detections[detection_b][2][1]
-            if (math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS) <= SOCIAL_DISTANCING_THRESHOLD):   
+            if (math.sqrt(((center_x_detection_a-center_x_detection_b)*(center_x_detection_a-center_x_detection_b))+((center_y_detection_a-center_y_detection_b)*(center_y_detection_a-center_y_detection_b))) * meters_in_a_pixel(ALTITUDE, CAMERA_ANGLE_IN_RADIANS, LENGTH_IN_PIXELS) <= SOCIAL_DISTANCING_THRESHOLD):
                 image = cv2.line(image, (int(center_x_detection_a), int(center_y_detection_a)), (int(center_x_detection_b), int(center_y_detection_b)), (random.randint(MINIMUM, MAXIMUM),random.randint(MINIMUM, MAXIMUM),random.randint(MINIMUM, MAXIMUM)), 1, cv2.LINE_AA)
                 image = cv2.putText(image, "{}".format("SDV"),(int((center_x_detection_a+center_x_detection_b)/2+5), int((center_y_detection_a+center_y_detection_b)/2)), cv2.FONT_HERSHEY_PLAIN,0.75,
                 (255, 0, 239), 0, cv2.FILLED)
@@ -348,3 +348,4 @@ network_predict_batch = lib.network_predict_batch
 network_predict_batch.argtypes = [c_void_p, IMAGE, c_int, c_int, c_int,
                                    c_float, c_float, POINTER(c_int), c_int, c_int]
 network_predict_batch.restype = POINTER(DETNUMPAIR)
+
